@@ -1,0 +1,13 @@
+name = "SiliconeDolls"
+filename = "SiliconeDolls-neoforge-1.21.1-1.0.0+build.49.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/7rBlSqmp/versions/RVgca7dO/SiliconeDolls-neoforge-1.21.1-1.0.0%2Bbuild.49.jar"
+hash-format = "sha512"
+hash = "0c32aa31874162ea8f88515bd6a06a6e6a690d3bf1d1f4f2131214e35d188081a25defc5e8d08ad3adb4f5f83a91430d5c7696e73785eabd820261da27b8d43f"
+
+[update]
+[update.modrinth]
+mod-id = "7rBlSqmp"
+version = "RVgca7dO"

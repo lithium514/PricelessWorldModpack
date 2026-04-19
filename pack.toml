@@ -1,0 +1,13 @@
+name = "Priceless World Modpack"
+author = "lithium514"
+version = "26.0"
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "923e4dc5b9a8014d906a4b5480e3f9f6de3bfba3a6b725e6ec7a074a78a142dd"
+
+[versions]
+minecraft = "1.21.1"
+neoforge = "21.1.227"

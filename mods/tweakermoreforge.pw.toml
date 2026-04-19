@@ -1,0 +1,13 @@
+name = "TweakerMoreForge"
+filename = "tweakermoreforge-0.0.8-mc1.21.1.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/BOJKcpCJ/versions/uSvjsZrG/tweakermoreforge-0.0.8-mc1.21.1.jar"
+hash-format = "sha512"
+hash = "bde935cf1ce2a67c719e2cf10b532cb3cb16544098e349c941f81a06677e31d18da26968a6e0cfe1ed3cf5902cbedc6971db4ba3cad9b04a965270eecc7d690f"
+
+[update]
+[update.modrinth]
+mod-id = "BOJKcpCJ"
+version = "uSvjsZrG"

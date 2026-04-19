@@ -1,0 +1,13 @@
+name = "WebDisplays REMASTER"
+filename = "WebDisplays-REMASTER-2.0.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/yfY0Iuwp/versions/6LBQFA5n/WebDisplays-REMASTER-2.0.0.jar"
+hash-format = "sha512"
+hash = "ce4c55f8fc1b37d9bc0e0cf39d79f62611e6e2412b6c8c3c78b84d5bb433fdd9502010fb3d55bd0c6cc3954e0d3605e3ffa22471530d4c3a3b72db4764f82a9a"
+
+[update]
+[update.modrinth]
+mod-id = "yfY0Iuwp"
+version = "6LBQFA5n"

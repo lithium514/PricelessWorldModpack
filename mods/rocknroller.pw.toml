@@ -1,0 +1,13 @@
+name = "Rock'n Roller"
+filename = "rocknroller-0.4.0+mc1.21.1.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/hYq29QmW/versions/vsVKkDaQ/rocknroller-0.4.0%2Bmc1.21.1.jar"
+hash-format = "sha512"
+hash = "eec8e52cf74fabc17f38421a0b5fb0d9d2e66cc147e731d661a8eac4de84c15068d3c4b82dbdfa9460bc5777303b6faa9e2888222b6d1033b62143499c9f4f76"
+
+[update]
+[update.modrinth]
+mod-id = "hYq29QmW"
+version = "vsVKkDaQ"
