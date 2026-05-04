@@ -1,0 +1,41 @@
+ServerEvents.recipes(event =>{
+        const {create} = event.recipes
+        //鞘翅(复制)
+        const incomplete = 'create:incomplete_precision_mechanism'
+        create.sequenced_assembly(
+        [
+        Item.of('minecraft:elytra').withChance(0.95),
+        Item.of('minecraft:elytra',2).withChance(0.05)
+        ],
+        'minecraft:elytra',
+        [
+        create.cutting(incomplete,incomplete),
+        create.deploying(incomplete,[incomplete,'minecraft:phantom_membrane']),
+        create.deploying(incomplete,[incomplete,'minecraft:string']),
+        create.deploying(incomplete,[incomplete,'minecraft:light_gray_dye']),
+        create.deploying(incomplete,[incomplete,'minecraft:slime_ball']),
+        create.deploying(incomplete,[incomplete,'minecraft:feather']),
+        create.pressing(incomplete,incomplete)
+        ]
+        )
+        .transitionalItem(incomplete)
+        .loops(32)
+        //鞘翅(无中生有)
+        create.sequenced_assembly(
+        [
+        Item.of('minecraft:elytra').withChance(0.8)
+        ],
+        'minecraft:purpur_block',
+        [
+        create.deploying(incomplete,[incomplete,'minecraft:diamond']),
+        create.deploying(incomplete,[incomplete,'minecraft:gold_ingot']),
+        create.deploying(incomplete,[incomplete,'minecraft:string']),
+        create.deploying(incomplete,[incomplete,'minecraft:light_gray_dye']),
+        create.deploying(incomplete,[incomplete,'minecraft:slime_ball']),
+        create.deploying(incomplete,[incomplete,'minecraft:feather']),
+        create.pressing(incomplete,incomplete)
+        ]
+        )
+        .transitionalItem(incomplete)
+        .loops(64)
+})
