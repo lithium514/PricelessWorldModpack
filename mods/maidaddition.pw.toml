@@ -1,0 +1,13 @@
+name = "MaidAddition"
+filename = "maidaddition1.21.1-1.0.1-beta-all.jar"
+side = "both"
+
+[download]
+hash-format = "sha1"
+hash = "5e895cf27a8b44f6f7c7c7e8867b00b4b01d2c0d"
+mode = "metadata:curseforge"
+
+[update]
+[update.curseforge]
+file-id = 7604190
+project-id = 1255350

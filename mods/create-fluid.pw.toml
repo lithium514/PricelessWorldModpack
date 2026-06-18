@@ -1,13 +1,13 @@
 name = "Create: Fluid"
-filename = "fluid-1.2.1.jar"
+filename = "fluid-2.1.3.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/JlZEVjsF/versions/wW39hX0a/fluid-1.2.1.jar"
-hash-format = "sha512"
-hash = "2be06e3692ae02fa0b7d50405338134367ab8474a9b71d835a99de9f14d1ed806af5d6f15fb9e64408af4094bc9116802f0fd09134c1f1db0823565c44046161"
+hash-format = "sha1"
+hash = "e498a75f0f8548c831b214bc2f3c3b0f8e758f71"
+mode = "metadata:curseforge"
 
 [update]
-[update.modrinth]
-mod-id = "JlZEVjsF"
-version = "wW39hX0a"
+[update.curseforge]
+file-id = 8201361
+project-id = 1346709

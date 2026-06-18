@@ -1,13 +1,13 @@
 name = "Net Music"
-filename = "netmusic-1.4.0-neoforge+mc1.21.1.jar"
+filename = "netmusic-1.5.1-neoforge+mc1.21.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/gKNuqaQq/versions/mHPC2ma0/netmusic-1.4.0-neoforge%2Bmc1.21.1.jar"
+url = "https://cdn.modrinth.com/data/gKNuqaQq/versions/TsBhMbKh/netmusic-1.5.1-neoforge%2Bmc1.21.1.jar"
 hash-format = "sha512"
-hash = "f9c3e97f20a05c1678b1dcf18245fbc0ec7aaabec067903d962cb3f58ed272c4e34d197df56047043a9f5999393dd5efa8a496e2abd53eae253344b5a29f84ee"
+hash = "30cd0948a0f82d0af559f10a69f2f700524ea34930e9927e63b6f3a18cb2a719c1c7915e0768eae7298efdffe3499e3f41dbb66f78c56ec1f673214a43a0dfe7"
 
 [update]
 [update.modrinth]
 mod-id = "gKNuqaQq"
-version = "mHPC2ma0"
+version = "TsBhMbKh"

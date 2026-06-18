@@ -1,0 +1,61 @@
+# Priceless World Modpack - Docker Compose
+# Usage: docker-compose up -d
+
+version: '3.8'
+
+services:
+  minecraft-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEOFORGE_VERSION: 21.1.233
+        MC_VERSION: 1.21.1
+    container_name: priceless-world-server
+    restart: unless-stopped
+    ports:
+      - "25565:25565"
+      - "25575:25575"
+    volumes:
+      # Persist world data
+      - ./server-data/world:/server/world
+      # Persist server logs
+      - ./server-data/logs:/server/logs
+      # Optional: Mount custom server.properties
+      # - ./server-data/server.properties:/server/server.properties
+      # Optional: Mount custom mods
+      # - ./server-data/mods:/server/mods
+    environment:
+      # JVM Memory Settings
+      - JAVA_FLAGS=-Xms4G -Xmx8G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1
+      # Server Settings (override server.properties)
+      - EULA=true
+    deploy:
+      resources:
+        limits:
+          memory: 10G
+        reservations:
+          memory: 4G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Optional: PostgreSQL for server database
+# Uncomment if your server needs a database
+#  postgres:
+#    image: postgres:15-alpine
+#    container_name: minecraft-db
+#    restart: unless-stopped
+#    environment:
+#      POSTGRES_DB: minecraft
+#      POSTGRES_USER: minecraft
+#      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+#    volumes:
+#      - postgres-data:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+
+# volumes:
+#   postgres-data:

@@ -1,13 +1,13 @@
 name = "Maid Storage Manager"
-filename = "1.21.1-maid_storage_manager-1.15.4.jar"
+filename = "1.21.1-maid_storage_manager-1.15.6.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/5sIJPqAj/versions/mbFz0YdI/1.21.1-maid_storage_manager-1.15.4.jar"
+url = "https://cdn.modrinth.com/data/5sIJPqAj/versions/RgLYYPvs/1.21.1-maid_storage_manager-1.15.6.jar"
 hash-format = "sha512"
-hash = "61af388c0a7f42d09e027b44749ab204f2a6678b1400833ee19a3efa37d6e8bed9d626225052f29f954d0261daf1631f7fc92a885641e1bf4354908d5eb0de4b"
+hash = "7a1d3f3d504a41bfc15eb517c8f022fbd184c35a85ff01c18e403c229dd5df3f48fe7e44836c9af5c314399cf190fda18992e2bf6c9471430b4d2ba77023099e"
 
 [update]
 [update.modrinth]
 mod-id = "5sIJPqAj"
-version = "mbFz0YdI"
+version = "RgLYYPvs"

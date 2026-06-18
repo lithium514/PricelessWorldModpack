@@ -1,0 +1,13 @@
+name = "Accelerated Recoiling"
+filename = "acceleratedrecoiling-21.1.13-alpha.jar"
+side = "both"
+
+[download]
+hash-format = "sha1"
+hash = "257442ff8186cb7f11b25f513a96588078349c3b"
+mode = "metadata:curseforge"
+
+[update]
+[update.curseforge]
+file-id = 8185697
+project-id = 1374622
