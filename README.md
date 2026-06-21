@@ -3,11 +3,19 @@ The modpack of PricelessWorldServer
 
 ## Server Setup
 
-This modpack includes server packaging options. See [server/README.md](server/README.md) for details.
+This modpack includes server packaging options with MCDReforged support. See [server/README.md](server/README.md) for details.
 
 ### Quick Start
 
-**Option 1: NeoForge Server**
+**Option 1: NeoForge Server with MCDReforged (Recommended)**
+```bash
+cd server
+./setup.sh
+cd server-files
+./start-mcdr.sh
+```
+
+**Option 2: NeoForge Server (Direct)**
 ```bash
 cd server
 ./setup.sh
@@ -15,13 +23,14 @@ cd server-files
 ./start.sh
 ```
 
-**Option 2: Docker**
+**Option 3: Docker**
 ```bash
 docker-compose up -d
 ```
 
 ### Requirements
 - Java 21 or higher
+- Python 3.8 or higher (for MCDReforged)
 - 4GB+ RAM recommended
 
 ## Development
@@ -39,8 +48,8 @@ chmod +x packwiz
 ### GitHub Actions
 The workflow automatically builds:
 1. Modrinth Pack (.mrpack)
-2. Server Package (.tar.gz)
-3. Docker Image (.tar.gz)
+2. Server Package (.tar.gz) with MCDReforged
+3. Docker Image (.tar.gz) with MCDReforged
 
 ## License
 

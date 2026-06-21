@@ -2,7 +2,7 @@
 set -e
 
 # Priceless World Modpack - Server Setup Script
-# This script sets up a NeoForge server for the modpack
+# This script sets up a NeoForge server with MCDReforged
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -13,6 +13,8 @@ NEOFORGE_VERSION="21.1.233"
 SERVER_DIR="${SCRIPT_DIR}/server-files"
 MEMORY_MIN="4G"
 MEMORY_MAX="8G"
+MCDR_VERSION="2.15.7"
+ENABLE_MCDR=true
 
 # Colors for output
 RED='\033[0;31m'
@@ -51,6 +53,14 @@ while [[ $# -gt 0 ]]; do
             NEOFORGE_VERSION="$2"
             shift 2
             ;;
+        --mcdr-version)
+            MCDR_VERSION="$2"
+            shift 2
+            ;;
+        --no-mcdr)
+            ENABLE_MCDR=false
+            shift
+            ;;
         *)
             echo "Unknown option: $1"
             exit 1
@@ -76,6 +86,29 @@ if [ "$JAVA_VERSION" -lt 21 ]; then
     exit 1
 fi
 print_status "Java $JAVA_VERSION found"
+
+# Check for Python 3 (required for MCDReforged)
+if [ "$ENABLE_MCDR" = true ]; then
+    print_status "Checking for Python 3..."
+    if ! command -v python3 &> /dev/null; then
+        if ! command -v python &> /dev/null; then
+            print_error "Python 3 not found. Please install Python 3.8 or higher."
+            print_warning "You can also use --no-mcdr to skip MCDReforged installation."
+            exit 1
+        else
+            PYTHON_CMD="python"
+        fi
+    else
+        PYTHON_CMD="python3"
+    fi
+    
+    PYTHON_VERSION=$($PYTHON_CMD --version 2>&1 | cut -d' ' -f2 | cut -d'.' -f2)
+    if [ "$PYTHON_VERSION" -lt 8 ]; then
+        print_error "Python 3.8 or higher required. Found: Python 3.$PYTHON_VERSION"
+        exit 1
+    fi
+    print_status "Python 3.$PYTHON_VERSION found"
+fi
 
 # Create server directory
 print_status "Creating server directory..."
@@ -104,6 +137,117 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 print_status "NeoForge server installed"
+
+# Install MCDReforged
+if [ "$ENABLE_MCDR" = true ]; then
+    print_status "Installing MCDReforged $MCDR_VERSION..."
+    
+    # Create MCDR directory structure
+    mkdir -p "$SERVER_DIR/mcdr"
+    mkdir -p "$SERVER_DIR/mcdr/plugins"
+    mkdir -p "$SERVER_DIR/mcdr/config"
+    
+    # Install MCDReforged via pip
+    $PYTHON_CMD -m pip install --user "mcdreforged==$MCDR_VERSION" 2>/dev/null || \
+    $PYTHON_CMD -m pip install --user mcdreforged 2>/dev/null || \
+    pip install "mcdreforged==$MCDR_VERSION" 2>/dev/null || \
+    pip install mcdreforged
+    
+    # Create MCDR config
+    cat > "$SERVER_DIR/mcdr/config.yml" << MCDREOF
+# MCDReforged Configuration for Priceless World Modpack
+
+# Language setting
+language: en_us
+
+# The command to start the server
+# MCDR will launch the server as a subprocess
+start_command: java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Xms${MEMORY_MIN} -Xmx${MEMORY_MAX} -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 @libraries/net/neoforged/neoforge/${NEOFORGE_VERSION}/win_args.txt nogui
+
+# Server handler - how MCDR reads server output
+handler: vanilla_handler
+
+# Console encoding
+encoding: utf8
+decoding: utf8
+
+# Check interval in seconds
+check_interval: 0.5
+
+# Server directory (relative to MCDR config)
+server_directory: ../
+
+# Permission settings
+permission:
+    admin:
+        level: 4
+    mod:
+        level: 3
+    helper:
+        level: 2
+        player:
+            level: 1
+        guest:
+            level: 0
+MCDREOF
+    
+    # Create MCDR permission file
+    cat > "$SERVER_DIR/mcdr/permission.yml" << 'PERMEOF'
+# MCDReforged Permission Configuration
+
+admin:
+    level: 4
+    
+mod:
+    level: 3
+    
+helper:
+    level: 2
+    
+player:
+    level: 1
+    
+guest:
+    level: 0
+PERMEOF
+    
+    # Create MCDR startup script for Linux/Mac
+    cat > "$SERVER_DIR/start-mcdr.sh" << MCDREOF
+#!/bin/bash
+# Priceless World Modpack Server - MCDReforged Startup Script
+
+echo "Starting Priceless World Modpack Server with MCDReforged..."
+echo "Memory: ${MEMORY_MIN} - ${MEMORY_MAX}"
+echo ""
+
+cd mcdr
+$PYTHON_CMD -m mcdreforged
+
+echo ""
+echo "MCDReforged stopped. Press any key to exit..."
+read -n 1 -s
+MCDREOF
+    chmod +x "$SERVER_DIR/start-mcdr.sh"
+    
+    # Create MCDR startup script for Windows
+    cat > "$SERVER_DIR/start-mcdr.bat" << MCDREOF
+@echo off
+# Priceless World Modpack Server - MCDReforged Startup Script
+
+echo Starting Priceless World Modpack Server with MCDReforged...
+echo Memory: ${MEMORY_MIN} - ${MEMORY_MAX}
+echo.
+
+cd mcdr
+$PYTHON_CMD -m mcdreforged
+
+echo.
+echo MCDReforged stopped. Press any key to exit...
+pause >nul
+MCDREOF
+    
+    print_status "MCDReforged installed"
+fi
 
 # Create mods directory and copy mods
 print_status "Setting up mods..."
@@ -256,23 +400,52 @@ cat > "$SERVER_DIR/README.md" << 'EOF'
 
 ## Requirements
 - Java 21 or higher
+- Python 3.8 or higher (for MCDReforged)
 - 4GB+ RAM recommended
 
 ## Quick Start
 
-### Linux/Mac
+### Option 1: With MCDReforged (Recommended)
+MCDReforged provides server management, plugins, and automation.
+
+#### Linux/Mac
 ```bash
-chmod +x start.sh
-./start.sh
+chmod +x start-mcdr.sh
+./start-mcdr.sh
 ```
 
-### Windows
+#### Windows
 ```cmd
+start-mcdr.bat
+```
+
+### Option 2: Direct Server
+```bash
+# Linux/Mac
+chmod +x start.sh
+./start.sh
+
+# Windows
 start.bat
 ```
 
+## MCDReforged
+
+MCDReforged is a Python-based Minecraft server control tool that provides:
+- Plugin system for server management
+- Event-driven automation
+- Hot-reloadable plugins
+- Multi-platform compatibility
+
+### MCDR Plugins
+Place MCDR plugins in the `mcdr/plugins/` directory.
+
+### MCDR Configuration
+Edit `mcdr/config.yml` to customize MCDR settings.
+
 ## Configuration
 
+### Server Properties
 Edit `server.properties` to customize your server settings.
 
 ### Recommended Settings
@@ -288,6 +461,7 @@ Edit `server.properties` to customize your server settings.
 2. **Use Aikar's Flags**: The startup scripts include optimized JVM flags
 3. **Adjust view-distance**: Lower values improve performance
 4. **Use Lithium**: Already included in the modpack for server optimization
+5. **Use MCDR Plugins**: Install performance monitoring plugins
 
 ## Troubleshooting
 
@@ -301,6 +475,11 @@ Increase the `-Xmx` value in the startup script.
 
 ### Mods Not Loading
 Ensure all mod files are in the `mods/` directory.
+
+### MCDReforged Issues
+- Ensure Python 3.8+ is installed
+- Check `mcdr/config.yml` configuration
+- View MCDR logs in `mcdr/logs/`
 EOF
 
 print_status "Server setup complete!"
@@ -310,8 +489,15 @@ echo "  Server files created in: $SERVER_DIR"
 echo "=========================================="
 echo ""
 echo "To start the server:"
-echo "  Linux/Mac:   cd $SERVER_DIR && ./start.sh"
-echo "  Windows:     cd $SERVER_DIR && start.bat"
+if [ "$ENABLE_MCDR" = true ]; then
+    echo "  With MCDReforged (Recommended):"
+    echo "    Linux/Mac:   cd $SERVER_DIR && ./start-mcdr.sh"
+    echo "    Windows:     cd $SERVER_DIR && start-mcdr.bat"
+    echo ""
+    echo "  Direct server:"
+fi
+echo "    Linux/Mac:   cd $SERVER_DIR && ./start.sh"
+echo "    Windows:     cd $SERVER_DIR && start.bat"
 echo ""
 echo "Note: First run will download additional files."
 echo ""

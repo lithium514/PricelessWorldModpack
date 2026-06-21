@@ -1,4 +1,4 @@
-# Priceless World Modpack - Docker Server
+# Priceless World Modpack - Docker Server with MCDReforged
 # Multi-stage build for smaller final image
 
 # Stage 1: Build stage
@@ -26,10 +26,12 @@ RUN java -jar neoforge-installer.jar --installServer
 # Stage 2: Runtime stage
 FROM eclipse-temurin:21-jre
 
-# Install required tools
+# Install required tools including Python 3 for MCDReforged
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
+    python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Create minecraft user
@@ -42,7 +44,12 @@ WORKDIR /server
 COPY --from=builder /build/ .
 
 # Create necessary directories
-RUN mkdir -p mods config kubejs world
+RUN mkdir -p mods config kubejs world mcdr/plugins mcdr/config mcdr/logs
+
+# Install MCDReforged
+ARG MCDR_VERSION=2.15.7
+RUN pip3 install --break-system-packages "mcdreforged==${MCDR_VERSION}" || \
+    pip3 install --break-system-packages mcdreforged
 
 # Copy modpack files
 COPY mods/ ./mods/
@@ -108,6 +115,19 @@ RUN echo "#By changing the setting below to TRUE you are indicating your agreeme
     echo "#Tue Jan 01 00:00:00 UTC 2024" >> eula.txt && \
     echo "eula=true" >> eula.txt
 
+# Create MCDReforged configuration
+ARG NEOFORGE_VERSION=21.1.233
+ARG MEMORY_MIN=4G
+ARG MEMORY_MAX=8G
+RUN echo "# MCDReforged Configuration for Priceless World Modpack" > mcdr/config.yml && \
+    echo "language: en_us" >> mcdr/config.yml && \
+    echo "start_command: java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Xms${MEMORY_MIN} -Xmx${MEMORY_MAX} -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 @libraries/net/neoforged/neoforge/${NEOFORGE_VERSION}/win_args.txt nogui" >> mcdr/config.yml && \
+    echo "handler: vanilla_handler" >> mcdr/config.yml && \
+    echo "encoding: utf8" >> mcdr/config.yml && \
+    echo "decoding: utf8" >> mcdr/config.yml && \
+    echo "check_interval: 0.5" >> mcdr/config.yml && \
+    echo "server_directory: ../" >> mcdr/config.yml
+
 # Set ownership
 RUN chown -R minecraft:minecraft /server
 
@@ -119,11 +139,10 @@ EXPOSE 25565 25575
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5m --retries=3 \
-    CMD pgrep -f "neoforge" || exit 1
+    CMD pgrep -f "mcdreforged" || pgrep -f "neoforge" || exit 1
 
 # Environment variables
 ENV JAVA_FLAGS="-Xms4G -Xmx8G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1"
 
-# Start command
-ARG NEOFORGE_VERSION=21.1.233
-CMD ["sh", "-c", "java $JAVA_FLAGS @libraries/net/neoforged/neoforge/${NEOFORGE_VERSION}/win_args.txt nogui"]
+# Start command with MCDReforged
+CMD ["sh", "-c", "cd mcdr && python3 -m mcdreforged"]
